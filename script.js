@@ -3,13 +3,58 @@ var secondsElapsed = 0;
 var timeLeft = 60;
 var i = 0;
 
-
+var score = 0;
 var timerHolder = document.querySelector("#timerHolder");
 var welcomeHolder = document.querySelector("#jumboWelcome");
 var explainText = document.querySelector("#explainText");
 var startBtn = document.querySelector("#startBtn");
 var timer = document.createElement("p");
 var buttonHolder = document.querySelector("#qButtonHolder");
+var a1;
+var a2;
+var a3;
+var a4;
+
+function gameOver()
+{
+    timerHolder.remove();
+    explainText.remove();
+    buttonHolder.remove();
+    welcomeHolder.className = "text-center"
+    var gameOverText = document.createElement("h2");
+    gameOverText.innerHTML = "Your score is: " + score +"!"; 
+    welcomeHolder.appendChild(gameOverText);
+    var gameOverDiv = document.createElement("div");
+    var initals = document.createElement("input");
+    initals.type = "text";
+    var lastPlayer = localStorage.getItem("player");
+    var saveButton = document.createElement("button");
+    saveButton.innerHTML = "Save initials";
+    var lastPlayerText = document.createElement("p");
+    lastPlayerText.innerHTML = JSON.parse(lastPlayer);
+    var newGameBtn = document.createElement("button");
+    newGameBtn.innerHTML = "Try Again?";
+
+
+    saveButton.onclick = function()
+    {
+        localStorage.setItem("player", JSON.stringify(initals.value +" "+ score));
+        console.log("initals saved!")
+    }
+
+    newGameBtn.onclick = function()
+    {
+        document.location.reload(true);
+    }
+    console.log(JSON.parse(lastPlayer))
+    gameOverDiv.appendChild(lastPlayerText);
+    gameOverDiv.appendChild(initals);
+    gameOverDiv.appendChild(saveButton)
+    gameOverDiv.appendChild(newGameBtn);
+    welcomeHolder.appendChild(gameOverDiv);
+
+
+}
 
 function startTimer()
 {
@@ -63,129 +108,134 @@ var questions = [
       answer: "console.log"
     }
   ];
-  function createButton(Qstring, counter)
+  function createButton()
   {
-    var qbutton = document.createElement("button");
-    qbutton.id = "button"+counter;
-    qbutton.innerHTML = Qstring;
-    buttonHolder.appendChild(qbutton);
+    for(var z = 0; z < 4; z++)
+    {
+        var qbutton = document.createElement("button");
+        qbutton.id = "button"+z;
+        buttonHolder.appendChild(qbutton);
+    }
+    a1 = document.querySelector("#button0");
+    a2 = document.querySelector("#button1");
+    a3 = document.querySelector("#button2");
+    a4 = document.querySelector("#button3");
+  }
+  function updateButton(button,qstring)
+  {
+    button.innerHTML = qstring;
   }
   function displayQuestion()
   {
     
-    if(timeLeft > 0)
+    if(timeLeft > 0 || i >= questions.length)
     {
         var counter = 0;
         if(i < questions.length)
         {
             explainText.innerHTML = questions[i].title;
-            for(var j = 0; j < questions[i].choices.length; j++)
-            {
-                createButton(questions[i].choices[j],counter)
-                counter++
-            }
+                updateButton(a1,questions[i].choices[0])
+                updateButton(a2,questions[i].choices[1])
+                updateButton(a3,questions[i].choices[2])
+                updateButton(a4,questions[i].choices[3])
         }
-        var a1 = document.querySelector("#button0");
-        var a2 = document.querySelector("#button1");
-        var a3 = document.querySelector("#button2");
-        var a4 = document.querySelector("#button3");
-        
-        a1.onclick = function()
-        {
-            if (a1.innerHTML === questions[i].answer)
-            {
-                //correct!
-                i++;
-                displayQuestion();
-                a1.remove();
-                a2.remove();
-                a3.remove();
-                a4.remove();
-            }
-            else{
-                //incorrect!
-                i++;
-                displayQuestion();
-                a1.remove();
-                a2.remove();
-                a3.remove();
-                a4.remove();
-            }
 
-        }
-        a2.onclick = function()
+        if(i < questions.length)
         {
-            if (a2.innerHTML === questions[i].answer)
+            a1.onclick = function()
             {
-                //correct!
-                i++;
-                displayQuestion();
-                a1.remove();
-                a2.remove();
-                a3.remove();
-                a4.remove();
+                if(i < questions.length)
+                {
+                    if (a1.innerHTML === questions[i].answer)
+                    {
+                        //correct!
+                        i++;
+                        score++;
+                        displayQuestion();                
+                    }
+                    else{
+                        //incorrect!
+                        i++;
+                        score--;
+                        timeLeft = timeLeft - 10;
+                        displayQuestion();
+                    }
+                }else
+                {
+                    gameOver();
+                }      
             }
-            else{
-                //incorrect!
-                i++;
-                displayQuestion();
-                a1.remove();
-                a2.remove();
-                a3.remove();
-                a4.remove();
-            }
-            
-        }
-        a3.onclick = function()
-        {
-            if (a3.innerHTML === questions[i].answer)
+            a2.onclick = function()
             {
-                //correct!
-                i++;
-                displayQuestion();
-                a1.remove();
-                a2.remove();
-                a3.remove();
-                a4.remove();
-            }
-            else{
-                //incorrect!
-                i++;
-                displayQuestion();
-                a1.remove();
-                a2.remove();
-                a3.remove();
-                a4.remove();
-            }
-            
-        }
-        a4.onclick = function()
-        {
-            if (a4.innerHTML === questions[i].answer)
+                if(i < questions.length)
+                {
+                    if (a2.innerHTML === questions[i].answer)
+                    {
+                        //correct!
+                        i++;                    
+                        score++;
+                        displayQuestion();
+                    }
+                    else{
+                        //incorrect!
+                        i++;                    
+                        score--;
+                        timeLeft = timeLeft - 10;
+                        displayQuestion();
+                    }
+                }else
             {
-                //correct!
-                i++;
-                displayQuestion();
-                a1.remove();
-                a2.remove();
-                a3.remove();
-                a4.remove();
+                gameOver();
             }
-            else{
-                //incorrect!
-                i++;
-                displayQuestion();
-                a1.remove();
-                a2.remove();
-                a3.remove();
-                a4.remove();
             }
-            
+            a3.onclick = function()
+            {
+                if(i < questions.length)
+                {
+                    if (a3.innerHTML === questions[i].answer)
+                    {
+                        //correct!
+                        i++;
+                        score++;
+                        displayQuestion();
+                    }
+                    else{
+                        //incorrect!
+                        i++;
+                        score--;
+                        timeLeft = timeLeft - 10;
+                        displayQuestion();
+                    }
+                }else
+                {
+                    gameOver();
+                }
+                
+            }
+            a4.onclick = function()
+            {
+                if(i < questions.length)
+                {
+                    if (a4.innerHTML === questions[i].answer)
+                    {
+                        //correct!
+                        i++;
+                        score++;
+                        displayQuestion();
+                    }
+                    else{
+                        //incorrect!
+                        i++;
+                        score--;
+                        timeLeft = timeLeft-10;
+                        displayQuestion();
+                    }
+                }else
+                {
+                    gameOver();
+                }
+            }
         }
-    }
-    else
-    {
-        explainText.innerHTML = "end of quiz"
     }
   }
 document.getElementById("startBtn").onclick = function()
@@ -196,6 +246,6 @@ document.getElementById("startBtn").onclick = function()
     welcomeHolder.className = "";
     explainText.innerHTML = "";
     startBtn.parentNode.removeChild(startBtn);
+    createButton();
     displayQuestion();
-
 }
